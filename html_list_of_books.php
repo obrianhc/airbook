@@ -13,7 +13,7 @@
 			$elemento = new element_book(0,0,"","");
 			$x = 0;
 			while($x < count($lista)){
-				$elemento = $lista[x];
+				$elemento = $lista[$x];
 				echo $elemento->getTitle() .'<br>';
 				$x++;
 			}

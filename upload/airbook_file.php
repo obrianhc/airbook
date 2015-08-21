@@ -36,8 +36,8 @@ class airbook_file{
 			require_once('db.php');
 			$query = "INSERT INTO archivo (id_user, title, description, filepath) 
 						VALUES ($userid, '$title', '$description', '$path');";
-			$result = mysql_query($query) or die ('Error insertando registro: ' . mysql_error());
-			mysql_close();
+			$result = mysql_query($connect, $query) or die ('Error insertando registro: ' . mysql_error());
+			mysql_close($connect);
 			if($result)
 				return true;
 			else
