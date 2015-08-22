@@ -15,7 +15,7 @@
 		<table>
 			<tr>
 				<td>Comentario: </td>
-				<td><input type="text" name="txt_comentario" size="15"></td>
+				<td><textarea name="txt_comentario" rows = "4" columns = "50"></textarea></td>
 			</tr>
 			<tr>
 				<td>Categoria: </td>
@@ -68,8 +68,12 @@
 						$lis_sol = $solicitud->get_solicitudes_todas_filtrada($sel_id_categoria);
 			
 					}elseif(isset($_POST['btn_insertar_solicitud'])){
-						$lblRestpuesta =  $solicitud->set_solicitud(1, $_POST['txt_comentario'], $_POST['opt_categorias_insert']); 
+						$boolRestpuesta =  $solicitud->set_solicitud(1, htmlspecialchars($_POST['txt_comentario']), $_POST['opt_categorias_insert']); 
 						$lis_sol = $solicitud->get_solicitudes_todas();	
+						if($boolRestpuesta)
+							$lblRestpuesta = "Insersión Exitosa";
+						else
+							$lblRestpuesta = "Insersión fallida, llene bien los campos";
 						echo "<script type=\"text/javascript\">alert(\"" . $lblRestpuesta . "\");</script>";  
 					}else{
 						$lis_sol = $solicitud->get_solicitudes_todas();	

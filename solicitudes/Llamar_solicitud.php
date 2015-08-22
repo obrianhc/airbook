@@ -54,21 +54,19 @@
 		}
 
 		function set_solicitud($id_usuario, $comentario, $id_categoria){
-			if($comentario == "")
-				return "El comentario no puede estar en blanco";
-			if($id_categoria == 0)
-				return "Escoga una categoria!!!";
+			if($comentario == "" OR $id_categoria == 0)
+				return false;
 			require("db.php");
 			if (mysqli_connect_errno())
 			{
-				return "Error en la conexión: " . mysqli_connect_error();
+				return false;
 			}
 			$query = "INSERT INTO solicitud(id_usuario, comentario, id_categoria, fecha) VALUES ($id_usuario, '$comentario', $id_categoria, NOW())";
 			mysqli_autocommit($connect,FALSE);
 			mysqli_query($connect, $query);
 			mysqli_commit($connect);
 			mysqli_close($connect);
-			return "Insersión Exitosa!!!!";
+			return true;
 
 		}
 	}
