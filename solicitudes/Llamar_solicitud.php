@@ -21,7 +21,8 @@
 			require("db.php");
 			$query = "SELECT solicitud.id_solicitud, usuario.nombre as nom_usuario, categoria.nombre as nom_categoria, solicitud.comentario as comentario, solicitud.fecha as fecha 
 					  FROM usuario, categoria, solicitud 
-					  WHERE usuario.id_usuario = solicitud.id_usuario AND categoria.id_categoria = solicitud.id_categoria";
+					  WHERE usuario.id_usuario = solicitud.id_usuario AND categoria.id_categoria = solicitud.id_categoria
+					  ORDER BY solicitud.fecha DESC";
 			$result = mysqli_query($connect, $query);
 			$lista = array();
 			while($row = mysqli_fetch_array($result)){
@@ -40,7 +41,8 @@
 				$str_filtro = $str_filtro . "AND solicitud.id_categoria = $id_categoria";
 			$query = "SELECT solicitud.id_solicitud, usuario.nombre as nom_usuario, categoria.nombre as nom_categoria, solicitud.comentario as comentario, solicitud.fecha as fecha 
 					  FROM usuario, categoria, solicitud 
-					  WHERE usuario.id_usuario = solicitud.id_usuario AND categoria.id_categoria = solicitud.id_categoria $str_filtro";
+					  WHERE usuario.id_usuario = solicitud.id_usuario AND categoria.id_categoria = solicitud.id_categoria $str_filtro
+					  ORDER BY solicitud.fecha DESC";
 			$result = mysqli_query($connect, $query);
 			$lista = array();
 			while($row = mysqli_fetch_array($result)){
@@ -49,6 +51,22 @@
 			}
 			mysqli_close($connect);
 			return $lista;
+		}
+
+		function set_solicitud($id_usuario, $comentario, $id_categoria){
+			if($comentario == "" OR $id_categoria == 0)
+				return false;
+			require("db.php");
+			if (mysqli_connect_errno())
+			{
+				return false;
+			}
+			$query = "INSERT INTO solicitud(id_usuario, comentario, id_categoria, fecha) VALUES ($id_usuario, '$comentario', $id_categoria, NOW())";
+			mysqli_autocommit($connect,FALSE);
+			mysqli_query($connect, $query);
+			mysqli_commit($connect);
+			mysqli_close($connect);
+			return true;
 
 		}
 	}
