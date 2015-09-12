@@ -5,7 +5,7 @@
 		public function testGetBook(){
 			$ranking = new Ranking();
 			$libro = $ranking->getBook(1); // Se envia el id de un libro para obtener la informaci'on del mismo.
-			$this->assertNull(!$libro);
+			$this->assertTrue(($libro!=null));
 		}
 
 		public function testRate(){

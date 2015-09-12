@@ -33,11 +33,14 @@ class airbook_file{
 		}
 
 		function insert_file($userid, $title, $path, $description){
-			require_once('db.php');
-			$query = "INSERT INTO archivo (id_user, title, description, filepath) 
+			include('dbm.php');
+			$query = "INSERT INTO archivo (id_usuario, nombre, descripcion, ruta) 
 						VALUES ($userid, '$title', '$description', '$path');";
-			$result = mysql_query($connect, $query) or die ('Error insertando registro: ' . mysql_error());
-			mysql_close($connect);
+			$data = new DataBase();
+			$data->open();
+			$result = mysqli_query($data->get_connect(), $query) 
+				or die ('Error insertando registro: ' . mysqli_error($data->get_connect()));
+			$data->close();
 			if($result)
 				return true;
 			else
