@@ -21,10 +21,4 @@
 			$rate = $ranking->rate(1,1,6);
 			$this->assertFalse($rate);
 		}
-
-		public function testGetRate(){
-			$ranking = new Ranking();
-			$rate = $ranking->getRate(1); // Obtiene la calificacion de un archivo
-			$this->assertGreaterThanOrEqual(0, $rate);
-		}
 	}

@@ -7,7 +7,7 @@
 			$data = new DataBase();
 			$data->open();
 			$query = "SELECT nombre, punteo FROM archivo WHERE id_archivo = $libro_id";
-			$result = mysqli_query($query, $connect);
+			$result = mysqli_query($query, $data->get_connect());
 			$data->close();
 			$data_book = array();
 			while($row = mysqli_fetch_array($result)){
@@ -24,12 +24,12 @@
 				$data = new DataBase();
 				$data->open();
 				$query = "INSERT INTO valoracion_archivo value($id_usuario,$id_archivo, $calificacion)";
-				if(mysqli_query($query, $data->get_connect)){
+				if(mysqli_query($query, $data->get_connect())){
 					$data->close();
 					return TRUE;
 				}else{
 					$query = "UPDATE valoracion_archivo SET puntos = $calificacion WHERE id_usuario = $id_usuario AND id_archivo = $id_archivo;";
-					if(mysqli_query($query,	$data->get_connect)){
+					if(mysqli_query($query,	$data->get_connect())){
 						$data->close();
 					}else{
 						$data->close();

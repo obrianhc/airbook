@@ -7,7 +7,7 @@
 		private $connect;
 
 		function open(){
-			$this->server="localhost";
+			$this->server="127.0.0.1";
 			$this->user="root";
 			$this->password="";
 			$this->db="airbook";
