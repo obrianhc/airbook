@@ -1,32 +1,33 @@
 <?php
-	/**
-	* 
-	*/
+	include('dbm.php');
 	class Llamar_solicitud
 	{
 		function get_categorias(){
-			require("db.php");
-			$query = "SELECT * FROM categoria";
-			$result = mysqli_query($connect, $query);
+			$datab = new DataBase();
+			$datab->open();
+			$query = "SELECT id_categoria, nombre FROM categoria";
+			$result = mysqli_query($datab->get_connect(), $query);
+
 			$lista = array();
 			while($row = mysqli_fetch_array($result)){
 				$elemento = new Categoria($row[0], $row[1]);
 				$lista[] = $elemento;
 			}
-			mysqli_close($connect);
+			mysqli_close($datab->get_connect());
 			return $lista;
 		}
 
 		function get_solicitudes_todas(){
-			require("db.php");
-			$query = "SELECT solicitud.id_solicitud, usuario.nombre as nom_usuario, categoria.nombre as nom_categoria, solicitud.comentario as comentario, solicitud.fecha as fecha 
-					  FROM usuario, categoria, solicitud 
-					  WHERE usuario.id_usuario = solicitud.id_usuario AND categoria.id_categoria = solicitud.id_categoria
+			$datab = new DataBase();
+			$datab->open();
+			$query = "SELECT solicitud.id_solicitud, usuario.nombre as nom_usuario, solicitud.comentario as comentario, solicitud.fecha as fecha 
+					  FROM usuario, solicitud 
+					  WHERE usuario.id_usuario = solicitud.id_usuario
 					  ORDER BY solicitud.fecha DESC";
-			$result = mysqli_query($connect, $query);
+			$result = mysqli_query($datab->get_connect(), $query);
 			$lista = array();
 			while($row = mysqli_fetch_array($result)){
-				$elemento = new Solicitud($row[0], $row[1], $row[2], $row[3], $row[4]);
+				$elemento = new Solicitud($row[0], $row[1], $row[2], $row[3]);
 				$lista[] = $elemento;
 			}
 			mysqli_close($connect);
@@ -34,54 +35,76 @@
 
 		}
 
-		function get_solicitudes_todas_filtrada($id_categoria){
-			require("db.php");
+		function get_solicitudes_todas_filtrada($categorias){
+			$datab = new DataBase();
+			$datab->open();
+			$connect = $datab->get_connect();
 			$str_filtro = "";
-			if($id_categoria > 0)
-				$str_filtro = $str_filtro . "AND solicitud.id_categoria = $id_categoria";
-			$query = "SELECT solicitud.id_solicitud, usuario.nombre as nom_usuario, categoria.nombre as nom_categoria, solicitud.comentario as comentario, solicitud.fecha as fecha 
-					  FROM usuario, categoria, solicitud 
-					  WHERE usuario.id_usuario = solicitud.id_usuario AND categoria.id_categoria = solicitud.id_categoria $str_filtro
-					  ORDER BY solicitud.fecha DESC";
+			$lista_con_comas = "";
+
+			if(count($categorias)>0){
+		
+				$str_filtro = ' AND solicitud_categoria.id_categoria IN ('.implode(', ', $categorias).') ';
+			}
+
+
+			$query = "SELECT DISTINCT 
+					   solicitud.id_solicitud, 
+					   usuario.nombre as nom_usuario, 
+				       solicitud.comentario as comentario, 
+				       solicitud.fecha as fecha 
+				       FROM solicitud, usuario, solicitud_categoria
+				       WHERE usuario.id_usuario = solicitud.id_usuario
+				       AND solicitud_categoria.id_solicitud = solicitud.id_solicitud $str_filtro ORDER BY solicitud.fecha DESC";
 			$result = mysqli_query($connect, $query);
+
 			$lista = array();
 			while($row = mysqli_fetch_array($result)){
-				$elemento = new Solicitud($row[0], $row[1], $row[2], $row[3], $row[4]);
+				$elemento = new Solicitud($row[0], $row[1], $row[2], $row[3]);
 				$lista[] = $elemento;
 			}
 			mysqli_close($connect);
 			return $lista;
 		}
 
-		function set_solicitud($id_usuario, $comentario, $id_categoria){
-			if($comentario == "" OR $id_categoria == 0)
+		function set_solicitud($id_usuario, $comentario, $categorias){
+			$ret = false;
+			if($comentario == "" OR count($categorias) == 0)
 				return false;
-			require("db.php");
-			if (mysqli_connect_errno())
-			{
-				return false;
-			}
-			$query = "INSERT INTO solicitud(id_usuario, comentario, id_categoria, fecha) VALUES ($id_usuario, '$comentario', $id_categoria, NOW())";
-			mysqli_autocommit($connect,FALSE);
-			mysqli_query($connect, $query);
-			mysqli_commit($connect);
-			mysqli_close($connect);
-			return true;
 
+			$datab = new DataBase();
+			$datab->open();
+			$connect = $datab->get_connect();
+			if (mysqli_connect_errno())
+				return false;
+
+			mysqli_autocommit($connect,FALSE);
+			$query = "INSERT INTO solicitud(id_usuario, comentario, fecha) VALUES ($id_usuario, '$comentario', NOW())";
+			mysqli_query($connect, $query);
+			$id_solicitud = mysqli_insert_id($connect);
+
+			foreach ($categorias as $categoria) {
+				$query = "INSERT INTO solicitud_categoria(id_solicitud, id_categoria) VALUES ($id_solicitud, $categoria)";
+				mysqli_query($connect, $query);
+			}
+
+			if(mysqli_commit($connect)){
+				$ret = true;
+			}
+			mysqli_close($connect);
+			return $ret;
 		}
 	}
 
 	class Solicitud{
 		var $id;
 		var $nom_usuario;
-		var $nom_categoria;
 		var $comentario;
 		var $fecha;
 
-		public function __construct($id, $nom_usuario, $nom_categoria, $comentario, $fecha){
+		public function __construct($id, $nom_usuario, $comentario, $fecha){
 			$this->id = $id;
 			$this->nom_usuario = $nom_usuario;
-			$this->nom_categoria = $nom_categoria;
 			$this->comentario = $comentario;
 			$this->fecha = $fecha;
 		}
@@ -92,10 +115,6 @@
 
 		function getNomUsuario(){
 			return $this->nom_usuario;
-		}
-
-		function getNomCategoria(){
-			return $this->nom_categoria;
 		}
 		function getComentario(){
 			return $this->comentario;
