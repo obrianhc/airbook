@@ -5,8 +5,8 @@
 </head>
 <body>
 	<?php 
-		require_once('Logica_perfil_archivo.php');
-		$lpa = new Logica_perfil_archivo;
+		require_once('Comment.php');
+		$lpa = new Comment();
 	?>
 	<form method="POST" enctype="multipart/form-data">
 		<h3>Archivo</h3>
@@ -29,7 +29,7 @@
 		</table>
 		<?php 
 		if(isset($_POST['btn_insertar_comentario'])){
-			if($lpa->set_comentar($_POST['txt_id_archivo'], $_POST['txt_id_usuario'], $_POST['txt_comentario'])){
+			if($lpa->insert($_POST['txt_id_usuario'], $_POST['txt_id_archivo'], $_POST['txt_comentario'])){
 				echo "<script type=\"text/javascript\">alert('Insersion exitosa');</script>"; 
 			}else{
 				echo "<script type=\"text/javascript\">alert('Insersion erronea');</script>"; 
