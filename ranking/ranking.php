@@ -7,7 +7,7 @@
 			$data = new DataBase();
 			$data->open();
 			$query = "SELECT nombre, punteo FROM archivo WHERE id_archivo = $libro_id";
-			$result = mysqli_query($query, $connect);
+			$result = mysqli_query($data->get_connect(), $query);
 			$data->close();
 			$data_book = array();
 			while($row = mysqli_fetch_array($result)){
@@ -20,17 +20,18 @@
 		//valoracion_archivo, devuelve true o false dependiendo si se pudo realizar la insercion o no.
 		function rate($id_usuario, $id_archivo, $calificacion){
 			require_once('dbm.php');
-			if($calificacion >=1 && $calificacion >=5){
+			if($calificacion >=1 && $calificacion <=5){
 				$data = new DataBase();
 				$data->open();
-				$query = "INSERT INTO valoracion_archivo value($id_usuario,$id_archivo, $calificacion)";
-				if(mysqli_query($query, $data->get_connect)){
+				$query = "INSERT INTO valoracion_archivo VALUES($id_usuario,$id_archivo, $calificacion)";
+				if(mysqli_query($data->get_connect(), $query)){
 					$data->close();
 					return TRUE;
 				}else{
 					$query = "UPDATE valoracion_archivo SET puntos = $calificacion WHERE id_usuario = $id_usuario AND id_archivo = $id_archivo;";
-					if(mysqli_query($query,	$data->get_connect)){
+					if(mysqli_query($data->get_connect(), $query)){
 						$data->close();
+						return TRUE;
 					}else{
 						$data->close();
 						return FALSE;
