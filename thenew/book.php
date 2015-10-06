@@ -31,6 +31,18 @@
 			$this->path = $path;
 			$this->description = $description;
 		}
+		function getBook($id){
+			require_once('dbm.php');
+			$data = new DataBase();
+			$data->open();
+			$query = "SELECT * FROM `archivo` WHERE `id_archivo` = $id";
+			$result = mysqli_query($data->get_connect(), $query);
+			$row = mysqli_fetch_array($result);
+			$this->user = $row[1];
+			$this->title = $row[2];
+			$this->path = $row[5];
+			$this->description = $row[3];
+		}
 		function setId($id){
 			$this->id = $id;
 		}

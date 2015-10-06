@@ -19,7 +19,9 @@
 			echo '<table>';
 			while($x < count($lista)){
 				$elemento = $lista[$x];
-				echo '<tr><td>' . $elemento->getTitle() . '</td><td>' . $elemento->getDescription() . '</td></tr>';
+				echo '<tr><td><a href="book_profile.php?id=' . $elemento->getId() . '">' 
+					. $elemento->getTitle() . '</a></td><td><a href="book_profile.php?id=' 
+					. $elemento->getId() . '">' . $elemento->getDescription() . '</a></td></tr>';
 				$x++;
 			}
 			echo '</table>';
