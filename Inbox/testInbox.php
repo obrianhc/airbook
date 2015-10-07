@@ -1,7 +1,6 @@
 <?php
 	
-	require_once 'Usuario.php';
-	require_once 'Mensaje.php';
+	require_once 'inbox.php';
 	class testInbox extends PHPUnit_Framework_TestCase{
 
 
